@@ -55,6 +55,10 @@ class _StockListItemState extends State<StockListItem> {
                   'Harga Grosir : ${widget.document['harga_grosir']}',
                   style: TextStyle(fontSize: 15),
                 ),
+                Divider(
+                  thickness: 1,
+                  color: Colors.black,
+                )
               ],
             ),
       trailing: _isEditing

@@ -18,14 +18,10 @@ class StockList extends StatelessWidget {
             child: Text('Error: ${snapshot.error}'),
           );
         } else {
-          List<DocumentSnapshot> stockItems = snapshot.data!.docs;
-          if (searchResults.isNotEmpty) {
-            stockItems = searchResults;
-          }
           return ListView.builder(
-            itemCount: stockItems.length,
+            itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              DocumentSnapshot document = stockItems[index];
+              DocumentSnapshot document = snapshot.data!.docs[index];
               return StockListItem(document: document);
             },
           );

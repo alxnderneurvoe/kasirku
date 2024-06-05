@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../model/color.dart';
+import '../../model/nav.dart';
 
 class BtnStokBarang extends StatefulWidget {
   const BtnStokBarang({super.key});
@@ -14,7 +15,9 @@ class _BtnStokBarangState extends State<BtnStokBarang> {
   Widget build(BuildContext context) {
     return Expanded(
         child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              navToStokBrg(context);
+            },
             child: Container(
                 width: double.infinity,
                 height: 130,

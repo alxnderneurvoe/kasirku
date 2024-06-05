@@ -68,7 +68,7 @@ class _BtnEcerState extends State<BtnEcer> {
                       if (customerName.isNotEmpty) {
                         Navigator.of(context).pop();
                         _saveDataToFirestore();
-                        navToJualEcer(context, customerName);
+                        navToJualEcer(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content:
@@ -82,7 +82,7 @@ class _BtnEcerState extends State<BtnEcer> {
   void _saveDataToFirestore() async {
     try {
       await _firestore
-          .collection('transaksiecer')
+          .collection('namapelanggan')
           .doc('namapelanggan')
           .set({'namapelanggan': customerNameController.text});
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

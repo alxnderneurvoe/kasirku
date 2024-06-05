@@ -21,6 +21,12 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
   String? selectedBarang;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Future<DocumentSnapshot> _fetchNamaPelanggan() async {
+    return await FirebaseFirestore.instance
+        .collection('namapelanggan')
+        .doc('namapelanggan')
+        .get();
+  }
 
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
@@ -31,13 +37,14 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
     double targetWidth = deviceHeight * 0.315;
     double targetWidth1 = deviceHeight * 0.64;
     double targetWidth2 = deviceHeight * 0.15;
+    double widthTotal = deviceHeight * 0.26;
 
     return SingleChildScrollView(
         child: Column(children: [
       Container(
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           padding: EdgeInsets.all(10),
-          height: 130,
+          height: 102,
           width: double.infinity,
           decoration: BoxDecoration(
               color: Colors.white,
@@ -55,7 +62,6 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // JAM JAM JAM
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -64,7 +70,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                             Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 60,
+                                height: 50,
                                 width: targetWidth,
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade200,
@@ -77,7 +83,6 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                                         .format(selectedDate),
                                     style: TextStyle(fontSize: 19)))
                           ]),
-                      // NAMA KASIR
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -86,7 +91,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                             Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 60,
+                                height: 50,
                                 width: targetWidth,
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade200,
@@ -97,7 +102,6 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                                 child: Text('Safrizal',
                                     style: TextStyle(fontSize: 19)))
                           ]),
-                      // NAMA PELANGGAN
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -106,7 +110,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                             Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 60,
+                                height: 50,
                                 width: targetWidth,
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade200,
@@ -114,15 +118,31 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                                         BorderRadius.all(Radius.circular(5)),
                                     border: Border.all(
                                         color: Colors.grey.shade700)),
-                                child: Text('Safrizal',
-                                    style: TextStyle(fontSize: 19)))
-                          ]),
+                                child: FutureBuilder<DocumentSnapshot>(
+                                    future: _fetchNamaPelanggan(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else if (snapshot.hasData) {
+                                        var data = snapshot.data!.data()
+                                            as Map<String, dynamic>;
+                                        return Text('${data['namapelanggan']}',
+                                            style: TextStyle(fontSize: 19));
+                                      } else {
+                                        return Text('No Data',
+                                            style: TextStyle(fontSize: 19));
+                                      }
+                                    }))
+                          ])
                     ])
               ])),
       Container(
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           padding: EdgeInsets.all(10),
-          height: 110,
+          height: 70,
           width: double.infinity,
           decoration: BoxDecoration(
               color: Colors.white,
@@ -138,7 +158,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             Container(
                 padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 60,
+                height: 50,
                 width: targetWidth1,
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -153,27 +173,29 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                         border: InputBorder.none))),
             Container(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 60,
+                height: 50,
                 width: targetWidth2,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                     border: Border.all(color: Colors.grey.shade700)),
-                child: TextFormField(
-                    controller: jumlahbrg,
-                    keyboardType: TextInputType.number,
-                    style: TextStyle(fontSize: 19, height: 0),
-                    decoration: InputDecoration(
-                        labelText: 'Qty',
-                        labelStyle: TextStyle(fontSize: 19),
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        border: InputBorder.none))),
+                child: Center(
+                  child: TextFormField(
+                      controller: jumlahbrg,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(fontSize: 19, height: 0),
+                      decoration: InputDecoration(
+                          labelText: 'Qty',
+                          labelStyle: TextStyle(fontSize: 19),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          border: InputBorder.none)),
+                )),
             Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 60,
+                height: 50,
                 width: targetWidth2,
                 decoration: BoxDecoration(
                     color: Colors.grey,
@@ -192,8 +214,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           padding: EdgeInsets.all(10),
           width: double.infinity,
-          height:
-              MediaQuery.of(context).size.height * 0.5, // Set a specific height
+          height: MediaQuery.of(context).size.height * 0.5,
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -210,11 +231,10 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
             StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('transaksiecer')
+                    .doc('namabarang')
+                    .collection('namabarang')
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.data!.docs.isEmpty) {
-                    return Container();
-                  }
                   if (snapshot.hasError) {
                     return Center(
                       child: Text('Error: ${snapshot.error}'),
@@ -230,21 +250,21 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                               return Card(
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                    side: const BorderSide(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
+                                      side:
+                                          const BorderSide(color: Colors.black),
+                                      borderRadius:
+                                          BorderRadius.circular(15.0)),
                                   margin: const EdgeInsets.all(8.0),
                                   child: Column(children: [
                                     ListTile(
-                                        title: Text(
-                                          booking['a_nama_barang'],
-                                          style: const TextStyle(fontSize: 20),
-                                        ),
+                                        title: Text(booking['a_nama_barang'],
+                                            style:
+                                                const TextStyle(fontSize: 20)),
                                         subtitle: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(booking['b_jumlah']),
+                                              Text(booking['b_jumlah'])
                                             ]),
                                         trailing: Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -263,7 +283,111 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                     return Container();
                   }
                 })
-          ]))
+          ])),
+      Container(
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          padding: EdgeInsets.all(10),
+          height: 102,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              boxShadow: [
+                BoxShadow(
+                    color: bluebg.withOpacity(0.5),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: Offset(0, 1))
+              ]),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Total Belanjaan',
+                                style: TextStyle(fontSize: 19)),
+                            SizedBox(height: 5),
+                            Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 50,
+                                width: widthTotal,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: Colors.grey.shade700)),
+                                child: Text(''))
+                          ]),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Pembayaran', style: TextStyle(fontSize: 19)),
+                            SizedBox(height: 5),
+                            Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 50,
+                                width: widthTotal,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: Colors.grey.shade700)),
+                                child: Text('',
+                                    style: TextStyle(fontSize: 19)))
+                          ]),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Kembalian', style: TextStyle(fontSize: 19)),
+                            SizedBox(height: 5),
+                            Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 50,
+                                width: widthTotal,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: Colors.grey.shade700)),
+                                child: Text(''))
+                          ]),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('', style: TextStyle(fontSize: 19)),
+                            SizedBox(height: 5),
+                            Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 50,
+                                width: targetWidth2,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: Colors.grey.shade700)),
+                                child: GestureDetector(
+                                    onTap: _saveDataToFirestore,
+                                    child: Center(
+                                        child: Text('Print',
+                                            style: TextStyle(
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)))))
+                          ]),
+                    ])
+              ])),
     ]));
   }
 
@@ -271,13 +395,20 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
     try {
       await _firestore
           .collection('transaksiecer')
+          .doc('namabarang')
+          .collection('namabarang')
           .add({'a_nama_barang': namabrg.text, 'b_jumlah': jumlahbrg.text});
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Registration successfully'),
-          duration: Duration(seconds: 4)));
+        content: Text('Registration successfully'),
+        duration: Duration(seconds: 4),
+      ));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), duration: Duration(seconds: 4)));
+        SnackBar(
+          content: Text('Error: $e'),
+          duration: Duration(seconds: 4),
+        ),
+      );
     }
   }
 
@@ -291,7 +422,8 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
     }
     sentenceCaseValue = words.join(' ');
     namaUser.value = namaUser.value.copyWith(
-        text: sentenceCaseValue,
-        selection: TextSelection.collapsed(offset: sentenceCaseValue.length));
+      text: sentenceCaseValue,
+      selection: TextSelection.collapsed(offset: sentenceCaseValue.length),
+    );
   }
 }

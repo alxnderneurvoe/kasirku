@@ -5,7 +5,7 @@ import 'boxecer_data.dart';
 // import 'boxecer_list.dart';
 
 class JualEcer extends StatefulWidget {
-  const JualEcer({super.key, required customerName});
+  JualEcer({super.key});
 
   @override
   State<JualEcer> createState() => _JualEcerState();

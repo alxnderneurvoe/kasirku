@@ -13,8 +13,8 @@ void navToLogin(BuildContext context) {
   Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
 }
 
-void navToJualEcer(BuildContext context, String customerName) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => JualEcer(customerName: customerName)));
+void navToJualEcer(BuildContext context) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => JualEcer()));
 }
 
 void navToJualGrosir(BuildContext context) {

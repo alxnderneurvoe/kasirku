@@ -13,13 +13,81 @@ class BoxDataEcer extends StatefulWidget {
 }
 
 class _BoxDataEcerState extends State<BoxDataEcer> {
-  TextEditingController namaUser = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Box Data Ecer'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            _showNameInputDialog(context);
+          },
+          child: Text('Enter Customer Name'),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showNameInputDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Customer Name'),
+          content: TextField(
+            controller: _nameController,
+            decoration: InputDecoration(hintText: 'Enter Name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Submit'),
+              onPressed: () {
+                if (_nameController.text.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TransactionDetails(
+                          customerName: _nameController.text),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class TransactionDetails extends StatefulWidget {
+  final String customerName;
+
+  TransactionDetails({required this.customerName});
+
+  @override
+  State<TransactionDetails> createState() => _TransactionDetailsState();
+}
+
+class _TransactionDetailsState extends State<TransactionDetails> {
   TextEditingController jumlahbrg = TextEditingController();
+
   TextEditingController namabrg = TextEditingController();
+
+  List<DocumentSnapshot> searchResults = [];
+
+  String? selectedBarang;
+
+  v
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   DateTime selectedDate = DateTime.now();
+
   TimeOfDay selectedTime = TimeOfDay.now();
 
   @override
@@ -29,267 +97,352 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
     double targetWidth1 = deviceHeight * 0.64;
     double targetWidth2 = deviceHeight * 0.15;
 
-    return Column(children: [
-      Container(
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          padding: EdgeInsets.all(10),
-          height: 130,
-          width: double.infinity,
-          decoration: BoxDecoration(
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              padding: EdgeInsets.all(10),
+              height: 130,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: bluebg.withOpacity(0.5),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(0, 1))
+                  ]),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // JAM JAM JAM
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Tgl || Jam',
+                                  style: TextStyle(fontSize: 19)),
+                              SizedBox(height: 5),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 60,
+                                width: targetWidth,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  border:
+                                      Border.all(color: Colors.grey.shade700),
+                                ),
+                                child: Text(
+                                  DateFormat('dd-MM-yyyy || HH:mm')
+                                      .format(selectedDate),
+                                  style: TextStyle(fontSize: 19),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // NAMA KASIR
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Kasir', style: TextStyle(fontSize: 19)),
+                              SizedBox(height: 5),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 60,
+                                width: targetWidth,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  border:
+                                      Border.all(color: Colors.grey.shade700),
+                                ),
+                                child: Text('Safrizal',
+                                    style: TextStyle(fontSize: 19)),
+                              ),
+                            ],
+                          ),
+                          // NAMA PELANGGAN
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Pelanggan',
+                                    style: TextStyle(fontSize: 19)),
+                                SizedBox(height: 5),
+                                Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    height: 60,
+                                    width: targetWidth,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(5)),
+                                      border: Border.all(
+                                          color: Colors.grey.shade700),
+                                    ),
+                                    child: Text('$customerName!',
+                                        style:
+                                            TextStyle(fontSize: 19, height: 0)))
+                              ])
+                        ])
+                  ])),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            padding: EdgeInsets.all(10),
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(10)),
               boxShadow: [
                 BoxShadow(
-                    color: bluebg.withOpacity(0.5),
-                    spreadRadius: 0,
-                    blurRadius: 4,
-                    offset: Offset(0, 1))
-              ]),
-          child: Column(
+                  color: bluebg.withOpacity(0.5),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Tgl || Jam', style: TextStyle(fontSize: 19)),
-                            SizedBox(height: 5),
-                            Container(
-                                alignment: Alignment.centerLeft,
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 60,
-                                width: targetWidth,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                    border: Border.all(
-                                        color: Colors.grey.shade700)),
-                                child: Text(
-                                    DateFormat('dd-MM-yyyy || HH:mm')
-                                        .format(selectedDate),
-                                    style: TextStyle(fontSize: 19)))
-                          ]),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Kasir', style: TextStyle(fontSize: 19)),
-                            SizedBox(height: 5),
-                            Container(
-                                alignment: Alignment.centerLeft,
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 60,
-                                width: targetWidth,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                    border: Border.all(
-                                        color: Colors.grey.shade700)),
-                                child: Text('Safrizal',
-                                    style: TextStyle(fontSize: 19)))
-                          ]),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Pelanggan', style: TextStyle(fontSize: 19)),
-                            SizedBox(height: 5),
-                            Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 60,
-                                width: targetWidth,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                    border: Border.all(
-                                        color: Colors.grey.shade700)),
-                                child: TextFormField(
-                                    controller: namaUser,
-                                    onChanged: _handleNamaText,
-                                    style: TextStyle(fontSize: 19, height: 0),
-                                    decoration: InputDecoration(
-                                        labelText: 'Nama Pelanggan',
-                                        labelStyle: TextStyle(fontSize: 19),
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.never,
-                                        border: InputBorder.none)))
-                          ])
-                    ])
-              ])),
-      Container(
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          padding: EdgeInsets.all(10),
-          height: 100,
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              boxShadow: [
-                BoxShadow(
-                    color: bluebg.withOpacity(0.5),
-                    spreadRadius: 0,
-                    blurRadius: 4,
-                    offset: Offset(0, 1))
-              ]),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 60,
-                width: targetWidth1,
-                decoration: BoxDecoration(
+                Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      height: 60,
+                      width: targetWidth1,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        border: Border.all(color: Colors.grey.shade700),
+                      ),
+                      child: TextFormField(
+                        controller: namabrg,
+                        style: TextStyle(fontSize: 19, height: 0),
+                        decoration: InputDecoration(
+                          labelText: 'Cari Barang',
+                          labelStyle: TextStyle(fontSize: 19),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          searchFromFirestore(value);
+                        },
+                      ),
+                    ),
+                    DropdownButton<String>(
+                      isExpanded: true,
+                      value: selectedBarang,
+                      hint: Text('Pilih Barang'),
+                      items: searchResults.map((DocumentSnapshot document) {
+                        return DropdownMenuItem<String>(
+                          value: document['nama'],
+                          child: Text(document['nama']),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedBarang = newValue;
+                          namabrg.text = newValue!;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  height: 60,
+                  width: targetWidth2,
+                  decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(5)),
-                    border: Border.all(color: Colors.grey.shade700)),
-                child: TextFormField(
-                    controller: namabrg,
-                    style: TextStyle(fontSize: 19, height: 0),
-                    decoration: InputDecoration(
-                        labelText: 'Cari Barang',
-                        labelStyle: TextStyle(fontSize: 19),
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        border: InputBorder.none))),
-            Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 60,
-                width: targetWidth2,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    border: Border.all(color: Colors.grey.shade700)),
-                child: TextFormField(
+                    border: Border.all(color: Colors.grey.shade700),
+                  ),
+                  child: TextFormField(
                     controller: jumlahbrg,
                     keyboardType: TextInputType.number,
                     style: TextStyle(fontSize: 19, height: 0),
                     decoration: InputDecoration(
-                        labelText: 'Qty',
-                        labelStyle: TextStyle(fontSize: 19),
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        border: InputBorder.none))),
-            Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 60,
-                width: targetWidth2,
-                decoration: BoxDecoration(
+                      labelText: 'Qty',
+                      labelStyle: TextStyle(fontSize: 19),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  height: 60,
+                  width: targetWidth2,
+                  decoration: BoxDecoration(
                     color: Colors.grey,
                     borderRadius: BorderRadius.all(Radius.circular(5)),
-                    border: Border.all(color: Colors.grey.shade700)),
-                child: GestureDetector(
+                    border: Border.all(color: Colors.grey.shade700),
+                  ),
+                  child: GestureDetector(
                     onTap: _saveDataToFirestore,
                     child: Center(
-                        child: Text('Add',
-                            style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white)))))
-          ])),
-      Container(
-          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          padding: EdgeInsets.all(10),
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
+                      child: Text(
+                        'Add',
+                        style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            padding: EdgeInsets.all(10),
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height *
+                0.5, // Set a specific height
+            decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(10)),
               boxShadow: [
                 BoxShadow(
-                    color: bluebg.withOpacity(0.5),
-                    spreadRadius: 0,
-                    blurRadius: 4,
-                    offset: Offset(0, 1))
-              ]),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('List Barang Terinput', style: TextStyle(fontSize: 19)),
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('transaksiecer')
-                    .doc(namaUser.text)
-                    .collection('orderan')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else if (snapshot.hasData &&
-                      snapshot.data!.docs.isNotEmpty) {
-                    return Expanded(
-                        child: ListView.builder(
-                            itemCount: snapshot.data?.docs.length,
-                            itemBuilder: (context, index) {
-                              DocumentSnapshot booking =
-                                  snapshot.data!.docs[index];
-                              return Card(
-                                  color: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    side: const BorderSide(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
-                                  margin: const EdgeInsets.all(8.0),
-                                  child: Column(children: [
-                                    ListTile(
-                                        title: Text(
-                                          booking['a_nama_barang'],
-                                          style: const TextStyle(fontSize: 20),
+                  color: bluebg.withOpacity(0.5),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('List Barang Terinput', style: TextStyle(fontSize: 19)),
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('transaksiecer')
+                        .doc('Kudanil')
+                        .collection('orderan')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else if (snapshot.hasData &&
+                          snapshot.data!.docs.isNotEmpty) {
+                        return ListView.builder(
+                          itemCount: snapshot.data?.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot booking =
+                                snapshot.data!.docs[index];
+                            return Card(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              margin: EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(
+                                      booking['a_nama_barang'],
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(booking['b_jumlah']),
+                                      ],
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            showDeleteConfirmationDialog(
+                                                context, booking);
+                                          },
                                         ),
-                                        subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(booking['b_jumlah']),
-                                            ]),
-                                        trailing: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              IconButton(
-                                                  icon:
-                                                      const Icon(Icons.delete),
-                                                  onPressed: () {
-                                                    showDeleteConfirmationDialog(
-                                                        context, booking);
-                                                  })
-                                            ]))
-                                  ]));
-                            }));
-                  } else {
-                    return Center(
-                      child: Text('No items found.'),
-                    );
-                  }
-                })
-          ]))
-    ]);
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        return Center(
+                          child: Text('No items found.'),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  oid searchFromFirestore(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        searchResults = [];
+      });
+      return;
+    }
+
+    QuerySnapshot result = await FirebaseFirestore.instance
+        .collection('barang')
+        .doc('barangecer')
+        .collection('list')
+        .where('nama', isGreaterThanOrEqualTo: query)
+        .where('nama', isLessThanOrEqualTo: query + '\uf8ff')
+        .get();
+
+    setState(() {
+      searchResults = result.docs;
+    });
   }
 
   void _saveDataToFirestore() async {
-    if (namaUser.text.isEmpty ||
-        namabrg.text.isEmpty ||
-        jumlahbrg.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Please fill all fields.'),
-          duration: Duration(seconds: 4)));
-      return;
-    }
-    try {
+      try {
       await _firestore
           .collection('transaksiecer')
-          .doc(namaUser.text)
+          .doc(namaUser)
           .collection('orderan')
           .add(
         {'a_nama_barang': namabrg.text, 'b_jumlah': jumlahbrg.text},
       );
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Registration successfully'),
-          duration: Duration(seconds: 4)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Registration successfully'),
+        duration: Duration(seconds: 4),
+      ));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), duration: Duration(seconds: 4)));
+        SnackBar(content: Text('Error: $e'), duration: Duration(seconds: 4)),
+      );
     }
   }
 
@@ -303,7 +456,8 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
     }
     sentenceCaseValue = words.join(' ');
     namaUser.value = namaUser.value.copyWith(
-        text: sentenceCaseValue,
-        selection: TextSelection.collapsed(offset: sentenceCaseValue.length));
+      text: sentenceCaseValue,
+      selection: TextSelection.collapsed(offset: sentenceCaseValue.length),
+    );
   }
 }

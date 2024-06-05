@@ -6,88 +6,23 @@ import '../../model/color.dart';
 import 'deleteecer.dart';
 
 class BoxDataEcer extends StatefulWidget {
-  const BoxDataEcer({super.key});
-
+    const BoxDataEcer({super.key});
+  
   @override
   State<BoxDataEcer> createState() => _BoxDataEcerState();
 }
 
 class _BoxDataEcerState extends State<BoxDataEcer> {
-  final TextEditingController _nameController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Box Data Ecer'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            _showNameInputDialog(context);
-          },
-          child: Text('Enter Customer Name'),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showNameInputDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Customer Name'),
-          content: TextField(
-            controller: _nameController,
-            decoration: InputDecoration(hintText: 'Enter Name'),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Submit'),
-              onPressed: () {
-                if (_nameController.text.isNotEmpty) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TransactionDetails(
-                          customerName: _nameController.text),
-                    ),
-                  );
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class TransactionDetails extends StatefulWidget {
-  final String customerName;
-
-  TransactionDetails({required this.customerName});
-
-  @override
-  State<TransactionDetails> createState() => _TransactionDetailsState();
-}
-
-class _TransactionDetailsState extends State<TransactionDetails> {
+  TextEditingController namaUser= TextEditingController();
   TextEditingController jumlahbrg = TextEditingController();
-
   TextEditingController namabrg = TextEditingController();
-
   List<DocumentSnapshot> searchResults = [];
 
   String? selectedBarang;
 
-  v
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   DateTime selectedDate = DateTime.now();
-
   TimeOfDay selectedTime = TimeOfDay.now();
 
   @override
@@ -190,7 +125,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                                       border: Border.all(
                                           color: Colors.grey.shade700),
                                     ),
-                                    child: Text('$customerName!',
+                                    child: Text('!',
                                         style:
                                             TextStyle(fontSize: 19, height: 0)))
                               ])
@@ -405,7 +340,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
     );
   }
 
-  oid searchFromFirestore(String query) async {
+  void searchFromFirestore(String query) async {
     if (query.isEmpty) {
       setState(() {
         searchResults = [];
@@ -427,10 +362,10 @@ class _TransactionDetailsState extends State<TransactionDetails> {
   }
 
   void _saveDataToFirestore() async {
-      try {
+    try {
       await _firestore
           .collection('transaksiecer')
-          .doc(namaUser)
+          .doc(namaUser.text)
           .collection('orderan')
           .add(
         {'a_nama_barang': namabrg.text, 'b_jumlah': jumlahbrg.text},

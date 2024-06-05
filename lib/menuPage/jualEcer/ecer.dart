@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:kasirku/model/nav.dart';
 import '/model/color.dart';
 
 import 'boxecer_data.dart';
 // import 'boxecer_list.dart';
 
 class JualEcer extends StatefulWidget {
-  const JualEcer({super.key});
+  const JualEcer({super.key, required customerName});
 
   @override
   State<JualEcer> createState() => _JualEcerState();
@@ -22,14 +21,7 @@ class _JualEcerState extends State<JualEcer> {
             backgroundColor: bluebg,
             title: Text('Transaksi Eceran',
                 style: TextStyle(fontSize: 17, color: Colors.white)),
-            centerTitle: true,
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.refresh),
-                  onPressed: () {
-                    navToJualEcer(context);
-                  })
-            ]),
+            centerTitle: true),
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(children: [

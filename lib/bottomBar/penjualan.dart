@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 import 'botbar.dart';
-import '../dashboard.dart';
+import '../dashboard/dashboard.dart';
 import 'pengeluaran.dart';
 
 class Penjualan extends StatefulWidget {

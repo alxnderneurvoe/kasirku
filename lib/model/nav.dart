@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../loginpage.dart';
 
-import '../dashboard.dart';
+import '../dashboard/dashboard.dart';
 import '../menuPage/jualEcer/ecer.dart';
 import '../menuPage/jualGrosir/grosir.dart';
 
@@ -13,8 +13,8 @@ void navToLogin(BuildContext context) {
   Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
 }
 
-void navToJualEcer(BuildContext context) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => JualEcer()));
+void navToJualEcer(BuildContext context, String customerName) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => JualEcer(customerName: customerName)));
 }
 
 void navToJualGrosir(BuildContext context) {

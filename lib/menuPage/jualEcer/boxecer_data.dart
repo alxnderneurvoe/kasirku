@@ -104,24 +104,25 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                             Text('Pelanggan', style: TextStyle(fontSize: 19)),
                             SizedBox(height: 5),
                             Container(
+                                alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.symmetric(horizontal: 8),
                                 height: 60,
                                 width: targetWidth,
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: Colors.grey.shade200,
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5)),
                                     border: Border.all(
                                         color: Colors.grey.shade700)),
-                                child: Text('!',
-                                    style: TextStyle(fontSize: 19, height: 0)))
-                          ])
+                                child: Text('Safrizal',
+                                    style: TextStyle(fontSize: 19)))
+                          ]),
                     ])
               ])),
       Container(
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           padding: EdgeInsets.all(10),
-          height: 200,
+          height: 110,
           width: double.infinity,
           decoration: BoxDecoration(
               color: Colors.white,
@@ -135,41 +136,22 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
               ]),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            Column(children: [
-              Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  height: 60,
-                  width: targetWidth1,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      border: Border.all(color: Colors.grey.shade700)),
-                  child: TextFormField(
-                      controller: namabrg,
-                      style: TextStyle(fontSize: 19, height: 0),
-                      decoration: InputDecoration(
-                          labelText: 'Cari Barang',
-                          labelStyle: TextStyle(fontSize: 19),
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          border: InputBorder.none),
-                      onChanged: (value) {
-                        searchFromFirestore(value);
-                      })),
-              DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedBarang,
-                  hint: Text('Pilih Barang'),
-                  items: searchResults.map((DocumentSnapshot document) {
-                    return DropdownMenuItem<String>(
-                        value: document['nama'], child: Text(document['nama']));
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedBarang = newValue;
-                      namabrg.text = newValue!;
-                    });
-                  })
-            ]),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                height: 60,
+                width: targetWidth1,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    border: Border.all(color: Colors.grey.shade700)),
+                child: TextFormField(
+                    controller: namabrg,
+                    style: TextStyle(fontSize: 19, height: 0),
+                    decoration: InputDecoration(
+                        labelText: 'Cari Barang',
+                        labelStyle: TextStyle(fontSize: 19),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        border: InputBorder.none))),
             Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -225,19 +207,22 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('List Barang Terinput', style: TextStyle(fontSize: 19)),
-            Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('transaksiecer')
-                        .doc('Kudanil')
-                        .collection('orderan')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (snapshot.hasData &&
-                          snapshot.data!.docs.isNotEmpty) {
-                        return ListView.builder(
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('transaksiecer')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Container();
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else if (snapshot.hasData &&
+                      snapshot.data!.docs.isNotEmpty) {
+                    return Expanded(
+                        child: ListView.builder(
                             itemCount: snapshot.data?.docs.length,
                             itemBuilder: (context, index) {
                               DocumentSnapshot booking =
@@ -245,67 +230,47 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                               return Card(
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: Colors.black),
-                                      borderRadius:
-                                          BorderRadius.circular(15.0)),
-                                  margin: EdgeInsets.all(8.0),
+                                    side: const BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  margin: const EdgeInsets.all(8.0),
                                   child: Column(children: [
                                     ListTile(
-                                        title: Text(booking['a_nama_barang'],
-                                            style: TextStyle(fontSize: 20)),
+                                        title: Text(
+                                          booking['a_nama_barang'],
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
                                         subtitle: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(booking['b_jumlah'])
+                                              Text(booking['b_jumlah']),
                                             ]),
                                         trailing: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               IconButton(
-                                                  icon: Icon(Icons.delete),
+                                                  icon:
+                                                      const Icon(Icons.delete),
                                                   onPressed: () {
                                                     showDeleteConfirmationDialog(
                                                         context, booking);
                                                   })
                                             ]))
                                   ]));
-                            });
-                      } else {
-                        return Center(child: Text('No items found.'));
-                      }
-                    }))
+                            }));
+                  } else {
+                    return Container();
+                  }
+                })
           ]))
     ]));
-  }
-
-  void searchFromFirestore(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        searchResults = [];
-      });
-      return;
-    }
-
-    QuerySnapshot result = await FirebaseFirestore.instance
-        .collection('barang')
-        .doc('barangecer')
-        .collection('list')
-        .where('nama', isGreaterThanOrEqualTo: query)
-        .where('nama', isLessThanOrEqualTo: query + '\uf8ff')
-        .get();
-
-    setState(() {
-      searchResults = result.docs;
-    });
   }
 
   void _saveDataToFirestore() async {
     try {
       await _firestore
           .collection('transaksiecer')
-          .doc(namaUser.text)
-          .collection('orderan')
           .add({'a_nama_barang': namabrg.text, 'b_jumlah': jumlahbrg.text});
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Registration successfully'),

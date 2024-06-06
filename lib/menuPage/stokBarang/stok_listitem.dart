@@ -40,27 +40,10 @@ class _StockListItemState extends State<StockListItem> {
               controller: _quantityController,
               keyboardType: TextInputType.number,
             )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Stock : ${widget.document['jumlahstok']}',
-                  style: TextStyle(fontSize: 15),
-                ),
-                Text(
-                  'Harga Eceran : ${widget.document['harga_eceran']}',
-                  style: TextStyle(fontSize: 15),
-                ),
-                Text(
-                  'Harga Grosir : ${widget.document['harga_grosir']}',
-                  style: TextStyle(fontSize: 15),
-                ),
-                Divider(
-                  thickness: 1,
-                  color: Colors.black,
-                )
-              ],
-            ),
+          : Text(
+            'Stock : ${widget.document['jumlahstok']}',
+            style: TextStyle(fontSize: 15),
+          ),
       trailing: _isEditing
           ? IconButton(
               icon: Icon(Icons.done),

@@ -83,28 +83,43 @@ class AddStockPage extends StatelessWidget {
                   ],
                 ),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Container(
-                      height: 60,
-                      width: 635,
-                      child: TextFormField(controller: namabrg)),
-                  Container(
+                  SizedBox(
                       height: 60,
                       width: 635,
                       child: TextFormField(
-                          controller: jumlahbrg,
-                          keyboardType: TextInputType.number)),
-                  Container(
+                        controller: namabrg,
+                        onChanged: _handleNamaText,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 20),
+                      )),
+                  SizedBox(
                       height: 60,
                       width: 635,
                       child: TextFormField(
-                          controller: pricegrosir,
-                          keyboardType: TextInputType.number)),
-                  Container(
+                        controller: jumlahbrg,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 20),
+                      )),
+                  SizedBox(
                       height: 60,
                       width: 635,
                       child: TextFormField(
-                          controller: priceeceran,
-                          keyboardType: TextInputType.number))
+                        controller: pricegrosir,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 20),
+                      )),
+                  SizedBox(
+                      height: 60,
+                      width: 635,
+                      child: TextFormField(
+                        controller: priceeceran,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 20),
+                      ))
                 ])
               ]),
               Container(
@@ -162,5 +177,20 @@ class AddStockPage extends StatelessWidget {
         duration: Duration(seconds: 2),
       ));
     }
+  }
+
+  void _handleNamaText(String value) {
+    String sentenceCaseValue = value.toLowerCase();
+    List<String> words = sentenceCaseValue.split(' ');
+    for (int i = 0; i < words.length; i++) {
+      if (words[i].isNotEmpty) {
+        words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+      }
+    }
+    sentenceCaseValue = words.join(' ');
+    namabrg.value = namabrg.value.copyWith(
+      text: sentenceCaseValue,
+      selection: TextSelection.collapsed(offset: sentenceCaseValue.length),
+    );
   }
 }

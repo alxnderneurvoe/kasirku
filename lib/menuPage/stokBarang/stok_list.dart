@@ -4,10 +4,17 @@ import 'package:flutter/material.dart';
 import 'stok_listitem.dart';
 
 class StockList extends StatelessWidget {
+  final String searchQuery;
+
+  const StockList({required this.searchQuery});
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('stock').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('stock')
+          .orderBy('namabarang')
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -18,10 +25,19 @@ class StockList extends StatelessWidget {
             child: Text('Error: ${snapshot.error}'),
           );
         } else {
+          List<DocumentSnapshot> stockItems = snapshot.data!.docs;
+          if (searchQuery.isNotEmpty) {
+            stockItems = stockItems.where((doc) {
+              return doc['namabarang']
+                  .toString()
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase());
+            }).toList();
+          }
           return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
+            itemCount: stockItems.length,
             itemBuilder: (context, index) {
-              DocumentSnapshot document = snapshot.data!.docs[index];
+              DocumentSnapshot document = stockItems[index];
               return StockListItem(document: document);
             },
           );

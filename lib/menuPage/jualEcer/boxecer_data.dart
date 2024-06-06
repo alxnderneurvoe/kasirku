@@ -157,21 +157,59 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             Container(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                height: 50,
-                width: targetWidth1,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    border: Border.all(color: Colors.grey.shade700)),
-                child: TextFormField(
-                    controller: namabrg,
-                    style: TextStyle(fontSize: 19, height: 0),
-                    decoration: InputDecoration(
-                        labelText: 'Cari Barang',
-                        labelStyle: TextStyle(fontSize: 19),
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        border: InputBorder.none))),
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              height: 50,
+              width: targetWidth1,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+                border: Border.all(color: Colors.grey.shade700),
+              ),
+              child: FutureBuilder<QuerySnapshot>(
+                future: FirebaseFirestore.instance.collection('stock').get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (snapshot.hasData) {
+                    List<String> barangNames = [];
+                    for (var doc in snapshot.data!.docs) {
+                      barangNames.add(doc['namabarang']);
+                    }
+                    return Autocomplete<String>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        return barangNames.where((String option) {
+                          return option
+                              .toLowerCase()
+                              .contains(textEditingValue.text.toLowerCase());
+                        });
+                      },
+                      onSelected: (String selectedItem) {
+                        setState(() {
+                          namabrg.text = selectedItem;
+                        });
+                      },
+                      fieldViewBuilder: (context, textEditingController,
+                          focusNode, onFieldSubmitted) {
+                        return TextFormField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          decoration: InputDecoration(
+                            labelText: 'Cari Barang',
+                            labelStyle: TextStyle(fontSize: 19),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            border: InputBorder.none,
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Text('No Data', style: TextStyle(fontSize: 19));
+                  }
+                },
+              ),
+            ),
             Container(
                 alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -340,8 +378,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                                         BorderRadius.all(Radius.circular(5)),
                                     border: Border.all(
                                         color: Colors.grey.shade700)),
-                                child: Text('',
-                                    style: TextStyle(fontSize: 19)))
+                                child: Text('', style: TextStyle(fontSize: 19)))
                           ]),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

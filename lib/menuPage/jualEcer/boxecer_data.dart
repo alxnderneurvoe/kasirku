@@ -19,6 +19,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
   List<DocumentSnapshot> searchResults = [];
 
   String? selectedBarang;
+  double totalBelanjaan = 0.0;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Future<DocumentSnapshot> _fetchNamaPelanggan() async {
@@ -157,59 +158,54 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              height: 50,
-              width: targetWidth1,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                border: Border.all(color: Colors.grey.shade700),
-              ),
-              child: FutureBuilder<QuerySnapshot>(
-                future: FirebaseFirestore.instance.collection('stock').get(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else if (snapshot.hasData) {
-                    List<String> barangNames = [];
-                    for (var doc in snapshot.data!.docs) {
-                      barangNames.add(doc['namabarang']);
-                    }
-                    return Autocomplete<String>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        return barangNames.where((String option) {
-                          return option
-                              .toLowerCase()
-                              .contains(textEditingValue.text.toLowerCase());
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                height: 50,
+                width: targetWidth1,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  border: Border.all(color: Colors.grey.shade700),
+                ),
+                child: FutureBuilder<QuerySnapshot>(
+                    future:
+                        FirebaseFirestore.instance.collection('stock').get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.hasData) {
+                        List<String> barangNames = [];
+                        for (var doc in snapshot.data!.docs) {
+                          barangNames.add(doc['namabarang']);
+                        }
+                        return Autocomplete<String>(optionsBuilder:
+                            (TextEditingValue textEditingValue) {
+                          return barangNames.where((String option) {
+                            return option
+                                .toLowerCase()
+                                .contains(textEditingValue.text.toLowerCase());
+                          });
+                        }, onSelected: (String selectedItem) {
+                          setState(() {
+                            namabrg.text = selectedItem;
+                          });
+                        }, fieldViewBuilder: (context, textEditingController,
+                            focusNode, onFieldSubmitted) {
+                          return TextFormField(
+                              controller: textEditingController,
+                              focusNode: focusNode,
+                              decoration: InputDecoration(
+                                  labelText: 'Cari Barang',
+                                  labelStyle: TextStyle(fontSize: 19),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  border: InputBorder.none));
                         });
-                      },
-                      onSelected: (String selectedItem) {
-                        setState(() {
-                          namabrg.text = selectedItem;
-                        });
-                      },
-                      fieldViewBuilder: (context, textEditingController,
-                          focusNode, onFieldSubmitted) {
-                        return TextFormField(
-                          controller: textEditingController,
-                          focusNode: focusNode,
-                          decoration: InputDecoration(
-                            labelText: 'Cari Barang',
-                            labelStyle: TextStyle(fontSize: 19),
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            border: InputBorder.none,
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return Text('No Data', style: TextStyle(fontSize: 19));
-                  }
-                },
-              ),
-            ),
+                      } else {
+                        return Text('No Data', style: TextStyle(fontSize: 19));
+                      }
+                    })),
             Container(
                 alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -279,31 +275,48 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                     );
                   } else if (snapshot.hasData &&
                       snapshot.data!.docs.isNotEmpty) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _calculateTotalBelanjaan(snapshot.data!.docs);
+                    });
+
                     return Expanded(
                         child: ListView.builder(
                             itemCount: snapshot.data?.docs.length,
                             itemBuilder: (context, index) {
                               DocumentSnapshot booking =
                                   snapshot.data!.docs[index];
+
+                              var jumlah = booking['b_jumlah'];
+                              var hargaEceran = booking['harga_eceran'];
+
+                              if (jumlah is String) {
+                                jumlah = int.parse(jumlah);
+                              }
+                              if (hargaEceran is String) {
+                                hargaEceran = double.parse(hargaEceran);
+                              }
+
+                              var total = jumlah * hargaEceran;
+
                               return Card(
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      side:
-                                          const BorderSide(color: Colors.black),
-                                      borderRadius:
-                                          BorderRadius.circular(15.0)),
+                                    side: const BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
                                   margin: const EdgeInsets.all(8.0),
                                   child: Column(children: [
                                     ListTile(
                                         title: Text(booking['a_nama_barang'],
                                             style:
                                                 const TextStyle(fontSize: 20)),
-                                        subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(booking['b_jumlah'])
-                                            ]),
+                                        subtitle: Row(children: [
+                                          Text(jumlah.toString()),
+                                          Text(' X '),
+                                          Text(hargaEceran.toString()),
+                                          Text(' = '),
+                                          Text('Rp. ${total.toString()}')
+                                        ]),
                                         trailing: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -350,17 +363,19 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                                 style: TextStyle(fontSize: 19)),
                             SizedBox(height: 5),
                             Container(
-                                alignment: Alignment.centerLeft,
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 50,
-                                width: widthTotal,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                    border: Border.all(
-                                        color: Colors.grey.shade700)),
-                                child: Text(''))
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              height: 50,
+                              width: widthTotal,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  border:
+                                      Border.all(color: Colors.grey.shade700)),
+                              child: Text('Rp. $totalBelanjaan',
+                                  style: TextStyle(fontSize: 19)),
+                            )
                           ]),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,15 +445,34 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
 
   void _saveDataToFirestore() async {
     try {
-      await _firestore
-          .collection('transaksiecer')
-          .doc('namabarang')
-          .collection('namabarang')
-          .add({'a_nama_barang': namabrg.text, 'b_jumlah': jumlahbrg.text});
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Registration successfully'),
-        duration: Duration(seconds: 4),
-      ));
+      // Fetch the harga_eceran from the stock collection
+      DocumentSnapshot stockDoc =
+          await _firestore.collection('stock').doc(namabrg.text).get();
+
+      if (stockDoc.exists) {
+        var hargaEceran = stockDoc['harga_eceran'];
+
+        // Save the data to the transaksiecer collection
+        await _firestore
+            .collection('transaksiecer')
+            .doc('namabarang')
+            .collection('namabarang')
+            .add({
+          'a_nama_barang': namabrg.text,
+          'b_jumlah': jumlahbrg.text,
+          'harga_eceran': hargaEceran,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Registration successfully'),
+          duration: Duration(seconds: 4),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: Barang not found in stock'),
+          duration: Duration(seconds: 4),
+        ));
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -447,6 +481,28 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
         ),
       );
     }
+  }
+
+  void _calculateTotalBelanjaan(List<DocumentSnapshot> docs) {
+    double total = 0.0;
+
+    for (var doc in docs) {
+      var jumlah = doc['b_jumlah'];
+      var hargaEceran = doc['harga_eceran'];
+
+      if (jumlah is String) {
+        jumlah = int.parse(jumlah);
+      }
+      if (hargaEceran is String) {
+        hargaEceran = double.parse(hargaEceran);
+      }
+
+      total += jumlah * hargaEceran;
+    }
+
+    setState(() {
+      totalBelanjaan = total;
+    });
   }
 
   void _handleNamaText(String value) {

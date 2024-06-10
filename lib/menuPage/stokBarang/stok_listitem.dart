@@ -12,6 +12,8 @@ class StockListItem extends StatefulWidget {
 
 class _StockListItemState extends State<StockListItem> {
   late TextEditingController _quantityController;
+  final TextEditingController _hargaEceranController = TextEditingController();
+  final TextEditingController _hargaGrosirController = TextEditingController();
   bool _isEditing = false;
 
   @override
@@ -33,17 +35,47 @@ class _StockListItemState extends State<StockListItem> {
     return ListTile(
       title: Text(
         widget.document['namabarang'],
-        style: TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 16),
       ),
       subtitle: _isEditing
-          ? TextFormField(
-              controller: _quantityController,
-              keyboardType: TextInputType.number,
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: _quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'Quantity'),
+                ),
+                TextFormField(
+                  controller: _hargaEceranController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'Harga Eceran'),
+                ),
+                TextFormField(
+                  controller: _hargaGrosirController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'Harga Grosir'),
+                ),
+              ],
             )
-          : Text(
-            'Stock : ${widget.document['jumlahstok']}',
-            style: TextStyle(fontSize: 15),
-          ),
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Stock: ${widget.document['jumlahstok']}',
+                  style: TextStyle(fontSize: 13),
+                ),
+                Text(
+                  'Harga Eceran: ${widget.document['harga_eceran']}',
+                  style: TextStyle(fontSize: 13),
+                ),
+                Text(
+                  'Harga Grosir: ${widget.document['harga_grosir']}',
+                  style: TextStyle(fontSize: 13),
+                ),
+                Divider(color: Colors.black54,)
+              ],
+            ),
       trailing: _isEditing
           ? IconButton(
               icon: Icon(Icons.done),
@@ -51,8 +83,11 @@ class _StockListItemState extends State<StockListItem> {
                 await FirebaseFirestore.instance
                     .collection('stock')
                     .doc(widget.document.id)
-                    .update(
-                        {'jumlahstok': int.parse(_quantityController.text)});
+                    .update({
+                  'jumlahstok': int.parse(_quantityController.text),
+                  'harga_eceran': int.parse(_hargaEceranController.text),
+                  'harga_grosir': int.parse(_hargaGrosirController.text),
+                });
                 setState(() {
                   _isEditing = false;
                 });

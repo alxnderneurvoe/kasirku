@@ -14,7 +14,9 @@ class _BtnLaporanState extends State<BtnLaporan> {
   Widget build(BuildContext context) {
     return Expanded(
         child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              // navToLaporan(context);
+            },
             child: Container(
                 width: double.infinity,
                 height: 130,
@@ -31,8 +33,9 @@ class _BtnLaporanState extends State<BtnLaporan> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.bar_chart_outlined, color: bluebg, size: 80),
-                      Text('Laporan', style: TextStyle(color: bluebg,fontSize: 20))
+                      Icon(Icons.bar_chart_outlined, color: bluebg, size: 50),
+                      Text('Laporan',
+                          style: TextStyle(color: bluebg, fontSize: 17))
                     ]))));
   }
 }

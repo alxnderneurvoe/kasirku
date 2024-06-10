@@ -35,9 +35,9 @@ class _BtnGrosirState extends State<BtnGrosir> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add_shopping_cart_sharp,
-                          color: bluebg, size: 80),
+                          color: bluebg, size: 50),
                       Text('Jual Grosir',
-                          style: TextStyle(color: bluebg, fontSize: 20))
+                          style: TextStyle(color: bluebg, fontSize: 17))
                     ]))));
   }
 }

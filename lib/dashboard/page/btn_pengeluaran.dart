@@ -31,8 +31,8 @@ class _BtnPengeluaranState extends State<BtnPengeluaran> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.receipt_long, color: bluebg, size: 80,),
-                      Text('Pengeluaran', style: TextStyle(color: bluebg, fontSize: 20))
+                      Icon(Icons.receipt_long, color: bluebg, size: 50,),
+                      Text('Pengeluaran', style: TextStyle(color: bluebg, fontSize: 17))
                     ]))));
   }
 }

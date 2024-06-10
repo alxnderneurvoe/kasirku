@@ -34,9 +34,9 @@ class _BtnStokBarangState extends State<BtnStokBarang> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.view_quilt, color: bluebg, size: 80),
-                      Text('Daftar Stok Barang',
-                          style: TextStyle(color: bluebg, fontSize: 20))
+                      Icon(Icons.view_quilt, color: bluebg, size: 50),
+                      Text('Stok Barang',
+                          style: TextStyle(color: bluebg, fontSize: 17))
                     ]))));
   }
 }

@@ -11,6 +11,9 @@ class AddStockPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double setWidth = deviceWidth * 0.59;
+
     return Scaffold(
         appBar: AppBar(
             foregroundColor: Colors.white,
@@ -19,9 +22,9 @@ class AddStockPage extends StatelessWidget {
             centerTitle: true),
         body: Container(
           alignment: Alignment.topLeft,
-          margin: EdgeInsets.symmetric(horizontal: 200, vertical: 10),
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-          height: 500,
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          height: 350,
           width: double.infinity,
           decoration: BoxDecoration(
               color: Colors.white,
@@ -43,22 +46,22 @@ class AddStockPage extends StatelessWidget {
                         height: 60,
                         alignment: Alignment.centerLeft,
                         child: Text('Nama Barang',
-                            style: TextStyle(fontSize: 18))),
+                            style: TextStyle(fontSize: 15))),
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
                         child: Text('Jumlah Barang',
-                            style: TextStyle(fontSize: 18))),
+                            style: TextStyle(fontSize: 15))),
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
                         child: Text('Harga Grosir',
-                            style: TextStyle(fontSize: 18))),
+                            style: TextStyle(fontSize: 15))),
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
                         child: Text('Harga Eceran',
-                            style: TextStyle(fontSize: 18))),
+                            style: TextStyle(fontSize: 15))),
                   ],
                 ),
                 Column(
@@ -67,58 +70,58 @@ class AddStockPage extends StatelessWidget {
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
-                        child: Text(' :  ', style: TextStyle(fontSize: 18))),
+                        child: Text(' :  ', style: TextStyle(fontSize: 15))),
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
-                        child: Text(' :  ', style: TextStyle(fontSize: 18))),
+                        child: Text(' :  ', style: TextStyle(fontSize: 15))),
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
-                        child: Text(' :  ', style: TextStyle(fontSize: 18))),
+                        child: Text(' :  ', style: TextStyle(fontSize: 15))),
                     Container(
                         height: 60,
                         alignment: Alignment.centerLeft,
-                        child: Text(' :  ', style: TextStyle(fontSize: 18))),
+                        child: Text(' :  ', style: TextStyle(fontSize: 15))),
                   ],
                 ),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   SizedBox(
                       height: 60,
-                      width: 635,
+                      width: setWidth,
                       child: TextFormField(
                         controller: namabrg,
                         onChanged: _handleNamaText,
                         textAlignVertical: TextAlignVertical.bottom,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       )),
                   SizedBox(
                       height: 60,
-                      width: 635,
+                      width: setWidth,
                       child: TextFormField(
                         controller: jumlahbrg,
                         textAlignVertical: TextAlignVertical.bottom,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       )),
                   SizedBox(
                       height: 60,
-                      width: 635,
+                      width: setWidth,
                       child: TextFormField(
                         controller: pricegrosir,
                         textAlignVertical: TextAlignVertical.bottom,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       )),
                   SizedBox(
                       height: 60,
-                      width: 635,
+                      width: setWidth,
                       child: TextFormField(
                         controller: priceeceran,
                         textAlignVertical: TextAlignVertical.bottom,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       ))
                 ])
               ]),
@@ -164,6 +167,10 @@ class AddStockPage extends StatelessWidget {
           content: Text('Registration successfully'),
           duration: Duration(seconds: 4),
         ));
+        namabrg.clear();
+        jumlahbrg.clear();
+        pricegrosir.clear();
+        priceeceran.clear();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Please enter valid data.'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../model/color.dart';
+import '../../model/nav.dart';
 
 class BtnPinjaman extends StatefulWidget {
   const BtnPinjaman({super.key});
@@ -14,7 +15,9 @@ class _BtnPinjamanState extends State<BtnPinjaman> {
   Widget build(BuildContext context) {
     return Expanded(
         child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              navToPinjaman(context);
+            },
             child: Container(
                 width: double.infinity,
                 height: 130,
@@ -31,8 +34,9 @@ class _BtnPinjamanState extends State<BtnPinjaman> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.person_outline_sharp, color: bluebg, size: 80),
-                      Text('Setting', style: TextStyle(color: bluebg, fontSize: 20))
+                      Icon(Icons.person_outline_sharp, color: bluebg, size: 50),
+                      Text('Pinjaman',
+                          style: TextStyle(color: bluebg, fontSize: 17))
                     ]))));
   }
 }

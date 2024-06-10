@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:kasirku/menuPage/stokBarang/stok_add.dart';
 import '../loginpage.dart';
-
 import '../dashboard/dashboard.dart';
+
 import '../menuPage/jualEcer/ecer.dart';
+import '../menuPage/pinjaman/pinjam_add.dart';
+import '../menuPage/stokBarang/stok_add.dart';
 import '../menuPage/jualGrosir/grosir.dart';
+import '../menuPage/pinjaman/pinjam.dart';
 import '../menuPage/stokBarang/stokbrg.dart';
 
 void navToDashBoard(BuildContext context) {
@@ -33,3 +35,18 @@ void navToAddStok(BuildContext context) {
   Navigator.push(
       context, MaterialPageRoute(builder: (context) => AddStockPage()));
 }
+
+void navToPinjaman(BuildContext context) {
+  Navigator.push(
+      context, MaterialPageRoute(builder: (context) => PinjamanPage()));
+}
+
+void navToAddPinjaman(BuildContext context) {
+  Navigator.push(
+      context, MaterialPageRoute(builder: (context) => AddPinjamanPage()));
+}
+
+// void navToLaporan(BuildContext context) {
+//   Navigator.push(
+//       context, MaterialPageRoute(builder: (context) => LaporanPage()));
+// }

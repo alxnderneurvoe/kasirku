@@ -39,9 +39,9 @@ class _BtnEcerState extends State<BtnEcer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.shopping_basket_outlined,
-                          color: bluebg, size: 80),
+                          color: bluebg, size: 50),
                       Text('Jual Eceran',
-                          style: TextStyle(color: bluebg, fontSize: 20))
+                          style: TextStyle(color: bluebg, fontSize: 17))
                     ]))));
   }
 
@@ -50,7 +50,7 @@ class _BtnEcerState extends State<BtnEcer> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text('Masukkan Nama Pelanggan'),
+              title: Text('Masukkan Nama Pelanggan', style: TextStyle(fontSize: 15),),
               content: TextField(
                   controller: customerNameController,
                   onChanged: _handleNamaText,

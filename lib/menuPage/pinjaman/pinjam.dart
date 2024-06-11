@@ -10,26 +10,7 @@ class PinjamanPage extends StatefulWidget {
 }
 
 class _PinjamanPageState extends State<PinjamanPage> {
-  late TextEditingController _searchController;
-  String searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged() {
-    setState(() {
-      searchQuery = _searchController.text;
-    });
-  }
+  String? selectedPeminjam;
 
   @override
   Widget build(BuildContext context) {
@@ -50,18 +31,28 @@ class _PinjamanPageState extends State<PinjamanPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: Icon(Icons.search),
-              ),
-              onChanged: (value) {
-                _onSearchChanged();
+            child: DropdownButtonFormField<String>(
+              value: selectedPeminjam,
+              hint: Text('Filter by Nama Peminjam'),
+              items: ["Safrizal", "Ikhsan", "Andre"]
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedPeminjam = newValue;
+                });
               },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.filter_list),
+              ),
             ),
           ),
-          Expanded(child: PinjamanList(searchQuery: searchQuery)),
+          Expanded(child: PinjamanList(searchQuery: selectedPeminjam)),
         ],
       ),
     );

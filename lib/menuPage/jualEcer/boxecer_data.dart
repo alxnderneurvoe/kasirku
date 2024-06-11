@@ -418,15 +418,18 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
   }
 
   Future<void> _fetchNamaPelanggan() async {
-    DocumentSnapshot snapshot =
-        await _firestore.collection('namapelangganecer').doc('namapelanggan').get();
+    DocumentSnapshot snapshot = await _firestore
+        .collection('namapelangganecer')
+        .doc('namapelanggan')
+        .get();
     setState(() {
       selectedPelanggan = snapshot['namapelanggan'];
     });
   }
 
   Future<void> _fetchBarangNames() async {
-    QuerySnapshot snapshot = await _firestore.collection('stock').get();
+    QuerySnapshot snapshot =
+        await _firestore.collection('stock').orderBy('namabarang').get();
     setState(() {
       barangNames =
           snapshot.docs.map((doc) => doc['namabarang'] as String).toList();
@@ -456,25 +459,13 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
           'b_jumlah': jumlahbrg.text.trim(),
           'harga_eceran': hargaEceran,
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Registration successfully'),
-          duration: Duration(seconds: 4),
-        ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Error: Barang not found in stock'),
           duration: Duration(seconds: 4),
         ));
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          duration: Duration(seconds: 4),
-        ),
-      );
-    }
+    } catch (e) {}
   }
 
   void _calculateTotalBelanjaan(List<DocumentSnapshot> docs) {

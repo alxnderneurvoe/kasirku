@@ -1,47 +1,58 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'pinjam_listitem.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PinjamanList extends StatelessWidget {
-  final String searchQuery;
+  final String? searchQuery;
 
-  const PinjamanList({required this.searchQuery});
+  PinjamanList({this.searchQuery});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('pinjaman')
-          .orderBy('nama_peminjam')
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('pinjaman').snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        } else {
-          List<DocumentSnapshot> stockItems = snapshot.data!.docs;
-          if (searchQuery.isNotEmpty) {
-            stockItems = stockItems.where((doc) {
-              return doc['nama_peminjam']
-                  .toString()
-                  .toLowerCase()
-                  .contains(searchQuery.toLowerCase());
-            }).toList();
-          }
-          return ListView.builder(
-            itemCount: stockItems.length,
-            itemBuilder: (context, index) {
-              DocumentSnapshot document = stockItems[index];
-              return PinjamanListItem(document: document);
-            },
-          );
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
         }
+
+        var documents = snapshot.data!.docs;
+
+        if (searchQuery != null && searchQuery!.isNotEmpty) {
+          documents = documents.where((doc) {
+            return doc['nama_peminjam'] == searchQuery;
+          }).toList();
+        }
+
+        int totalLoans = documents.fold(0, (int total, doc) {
+          return total + (doc['jumlah_pinjaman'] as int);
+        });
+
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
+                  var data = documents[index].data() as Map<String, dynamic>;
+                  return ListTile(
+                    title: Text(data['nama_peminjam']),
+                    subtitle: Text(
+                        'Jumlah: ${data['jumlah_pinjaman']}, Keperluan: ${data['keperluan']}'),
+                  );
+                },
+              ),
+            ),
+            Divider(color: Colors.black45),
+            Container(
+              padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Total Pinjaman: $totalLoans',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
       },
     );
   }

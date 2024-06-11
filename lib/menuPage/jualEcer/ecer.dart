@@ -26,7 +26,6 @@ class _JualEcerState extends State<JualEcer> {
             scrollDirection: Axis.vertical,
             child: Column(children: [
               BoxDataEcer(),
-              // BoxListEcer(),
             ])));
   }
 }

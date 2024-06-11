@@ -18,7 +18,7 @@ class _PinjamanListItemState extends State<PinjamanListItem> {
   void initState() {
     super.initState();
     _quantityController = TextEditingController(
-      text: widget.document['jumlahstok'].toString(),
+      text: widget.document['jumlah_pinjaman'].toString(),
     );
   }
 
@@ -32,7 +32,7 @@ class _PinjamanListItemState extends State<PinjamanListItem> {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        widget.document['namabarang'],
+        widget.document['nama_peminjam'],
         style: TextStyle(fontSize: 20),
       ),
       subtitle: _isEditing
@@ -41,7 +41,7 @@ class _PinjamanListItemState extends State<PinjamanListItem> {
               keyboardType: TextInputType.number,
             )
           : Text(
-            'Stock : ${widget.document['jumlahstok']}',
+            'Pinjaman : ${widget.document['jumlah_pinjaman']}',
             style: TextStyle(fontSize: 15),
           ),
       trailing: _isEditing
@@ -49,10 +49,10 @@ class _PinjamanListItemState extends State<PinjamanListItem> {
               icon: Icon(Icons.done),
               onPressed: () async {
                 await FirebaseFirestore.instance
-                    .collection('stock')
+                    .collection('pinjaman')
                     .doc(widget.document.id)
                     .update(
-                        {'jumlahstok': int.parse(_quantityController.text)});
+                        {'jumlah_pinjaman': int.parse(_quantityController.text)});
                 setState(() {
                   _isEditing = false;
                 });

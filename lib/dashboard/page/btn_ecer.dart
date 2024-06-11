@@ -20,7 +20,7 @@ class _BtnEcerState extends State<BtnEcer> {
     return Expanded(
         child: GestureDetector(
             onTap: () {
-              _showCustomerNameDialog(context);
+              _showCustomerNameEcer(context);
             },
             child: Container(
                 width: double.infinity,
@@ -45,7 +45,7 @@ class _BtnEcerState extends State<BtnEcer> {
                     ]))));
   }
 
-  void _showCustomerNameDialog(BuildContext context) {
+  void _showCustomerNameEcer(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -82,7 +82,7 @@ class _BtnEcerState extends State<BtnEcer> {
   void _saveDataToFirestore() async {
     try {
       await _firestore
-          .collection('namapelanggan')
+          .collection('namapelangganecer')
           .doc('namapelanggan')
           .set({'namapelanggan': customerNameController.text});
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

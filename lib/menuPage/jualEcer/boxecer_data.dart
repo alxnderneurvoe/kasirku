@@ -15,8 +15,11 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController namabrg = TextEditingController();
   final TextEditingController jumlahbrg = TextEditingController();
+  final TextEditingController _paymentController = TextEditingController();
+
   String? selectedPelanggan;
   double totalBelanjaan = 0.0;
+  double change = 0.0;
   DateTime selectedDate = DateTime.now();
   List<String> barangNames = [];
 
@@ -28,11 +31,16 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
   }
 
   @override
+  void dispose() {
+    _paymentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double targetWidth1 = deviceWidth * 0.55;
     double targetWidth2 = deviceWidth * 0.15;
-    double widthTotal = deviceWidth * 0.26;
     double halfBox = deviceWidth * 0.43;
 
     return Column(children: [
@@ -232,9 +240,10 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _calculateTotalBelanjaan(snapshot.data!.docs);
                     });
+
                     return Expanded(
                         child: ListView.builder(
-                            itemCount: snapshot.data?.docs.length,
+                            itemCount: snapshot.data?.docs.length ?? 0,
                             itemBuilder: (context, index) {
                               DocumentSnapshot booking =
                                   snapshot.data!.docs[index];
@@ -242,26 +251,41 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                               var hargaEceran = booking['harga_eceran'];
 
                               if (jumlah is String) {
-                                jumlah = int.parse(jumlah);
+                                try {
+                                  jumlah = int.parse(jumlah);
+                                } catch (e) {
+                                  print('Error parsing jumlah: $e');
+                                  jumlah = 0;
+                                }
+                              } else if (jumlah is! int) {
+                                jumlah = 0;
                               }
+
                               if (hargaEceran is String) {
-                                hargaEceran = double.parse(hargaEceran);
+                                try {
+                                  hargaEceran = double.parse(hargaEceran);
+                                } catch (e) {
+                                  print('Error parsing hargaEceran: $e');
+                                  hargaEceran = 0.0;
+                                }
+                              } else if (hargaEceran is! double) {
+                                hargaEceran = hargaEceran?.toDouble() ?? 0.0;
                               }
+
                               var total = jumlah * hargaEceran;
 
                               return Card(
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      side:
-                                          const BorderSide(color: Colors.black),
-                                      borderRadius:
-                                          BorderRadius.circular(15.0)),
+                                    side: const BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
                                   margin: const EdgeInsets.all(8.0),
                                   child: Column(children: [
                                     ListTile(
                                         title: Text(booking['a_nama_barang'],
                                             style:
-                                                const TextStyle(fontSize: 20)),
+                                                const TextStyle(fontSize: 16)),
                                         subtitle: Row(children: [
                                           Text(jumlah.toString()),
                                           Text(' X '),
@@ -289,7 +313,7 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
           ])),
       Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           height: 102,
           width: double.infinity,
           decoration: BoxDecoration(
@@ -303,24 +327,20 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                     offset: Offset(0, 1))
               ]),
           child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+              scrollDirection: Axis.vertical,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
                             children: [
-                              Text('Total Belanjaan',
-                                  style: TextStyle(fontSize: 19)),
-                              SizedBox(height: 5),
                               Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.symmetric(horizontal: 8),
-                                height: 50,
-                                width: widthTotal,
+                                height: 40,
+                                width: halfBox,
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade200,
                                     borderRadius:
@@ -328,93 +348,97 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
                                     border: Border.all(
                                         color: Colors.grey.shade700)),
                                 child: Text('Rp. $totalBelanjaan',
-                                    style: TextStyle(fontSize: 19)),
-                              )
-                            ]),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Pembayaran',
-                                  style: TextStyle(fontSize: 19)),
-                              SizedBox(height: 5),
+                                    style: TextStyle(fontSize: 16)),
+                              ),
+                              SizedBox(height: 10),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  height: 50,
-                                  width: widthTotal,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5)),
-                                      border: Border.all(
-                                          color: Colors.grey.shade700)),
-                                  child:
-                                      Text('', style: TextStyle(fontSize: 19)))
-                            ]),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Kembalian', style: TextStyle(fontSize: 19)),
-                              SizedBox(height: 5),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  height: 50,
-                                  width: widthTotal,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5)),
-                                      border: Border.all(
-                                          color: Colors.grey.shade700)),
-                                  child: Text(''))
-                            ]),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('', style: TextStyle(fontSize: 19)),
-                              SizedBox(height: 5),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  height: 50,
-                                  width: targetWidth2,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5)),
-                                      border: Border.all(
-                                          color: Colors.grey.shade700)),
-                                  child: GestureDetector(
-                                      onTap: _saveDataToFirestore,
-                                      child: Center(
-                                          child: Text('Print',
-                                              style: TextStyle(
-                                                  fontSize: 19,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white)))))
-                            ]),
-                      ])
-                ]),
-          )),
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 40,
+                                width: halfBox,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  border:
+                                      Border.all(color: Colors.grey.shade700),
+                                ),
+                                child: Text(
+                                  'Rp. $change',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(children: [
+                            Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 40,
+                                width: halfBox,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: Colors.grey.shade700)),
+                                child: TextFormField(
+                                    controller: _paymentController,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      _calculateChange();
+                                    },
+                                    decoration: InputDecoration(
+                                        hintText: 'Input Pembayaran',
+                                        border: InputBorder.none),
+                                    style: TextStyle(fontSize: 16))),
+                            SizedBox(height: 10),
+                            Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                height: 40,
+                                width: halfBox,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5)),
+                                    border: Border.all(
+                                        color: Colors.grey.shade700)),
+                                child: GestureDetector(
+                                    onTap: _saveDataToFirestore,
+                                    child: Center(
+                                        child: Text('Print',
+                                            style: TextStyle(
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)))))
+                          ])
+                        ])
+                  ])))
     ]);
   }
 
   Future<void> _fetchNamaPelanggan() async {
     DocumentSnapshot snapshot =
-        await _firestore.collection('namapelanggan').doc('namapelanggan').get();
+        await _firestore.collection('namapelangganecer').doc('namapelanggan').get();
     setState(() {
       selectedPelanggan = snapshot['namapelanggan'];
     });
   }
 
   Future<void> _fetchBarangNames() async {
-  QuerySnapshot snapshot = await _firestore.collection('stock').get();
-  setState(() {
-    barangNames = snapshot.docs.map((doc) => doc['namabarang'] as String).toList();
-  });
-}
+    QuerySnapshot snapshot = await _firestore.collection('stock').get();
+    setState(() {
+      barangNames =
+          snapshot.docs.map((doc) => doc['namabarang'] as String).toList();
+    });
+  }
 
+  void _calculateChange() {
+    double payment = double.tryParse(_paymentController.text) ?? 0.0;
+    setState(() {
+      change = payment - totalBelanjaan;
+    });
+  }
 
   Future<void> _saveDataToFirestore() async {
     try {
@@ -459,12 +483,34 @@ class _BoxDataEcerState extends State<BoxDataEcer> {
       var jumlah = doc['b_jumlah'];
       var hargaEceran = doc['harga_eceran'];
 
-      if (jumlah is String) {
-        jumlah = int.parse(jumlah);
+      if (jumlah is int) {
+        jumlah = jumlah.toDouble();
+      } else if (jumlah is double) {
+      } else if (jumlah is String) {
+        try {
+          jumlah = double.parse(jumlah);
+        } catch (e) {
+          print('Error parsing jumlah: $e');
+          jumlah = 0.0;
+        }
+      } else {
+        jumlah = 0.0;
       }
-      if (hargaEceran is String) {
-        hargaEceran = double.parse(hargaEceran);
+
+      if (hargaEceran is double) {
+      } else if (hargaEceran is int) {
+        hargaEceran = hargaEceran.toDouble();
+      } else if (hargaEceran is String) {
+        try {
+          hargaEceran = double.parse(hargaEceran);
+        } catch (e) {
+          print('Error parsing hargaEceran: $e');
+          hargaEceran = 0.0;
+        }
+      } else {
+        hargaEceran = 0.0;
       }
+
       total += jumlah * hargaEceran;
     }
     setState(() {

@@ -152,11 +152,11 @@ class AddStockPage extends StatelessWidget {
   void _addStock(BuildContext context) async {
     try {
       String nama = namabrg.text.trim();
-      int quantity = int.parse(jumlahbrg.text.trim());
-      int grosir = int.parse(pricegrosir.text.trim());
-      int eceran = int.parse(priceeceran.text.trim());
+      String quantity = jumlahbrg.text.trim();
+      String grosir = pricegrosir.text.trim();
+      String eceran = priceeceran.text.trim();
 
-      if (nama.isNotEmpty && quantity > 0) {
+      if (nama.isNotEmpty) {
         await FirebaseFirestore.instance.collection('stock').add({
           'namabarang': nama,
           'jumlahstok': quantity,

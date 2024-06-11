@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '/model/color.dart';
-import 'boxgrosir_cari.dart';
 import 'boxgrosir_data.dart';
 
+
 class JualGrosir extends StatefulWidget {
-  const JualGrosir({super.key});
+  JualGrosir({super.key});
 
   @override
   State<JualGrosir> createState() => _JualGrosirState();
@@ -25,8 +24,7 @@ class _JualGrosirState extends State<JualGrosir> {
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(children: [
-              BoxDataEcer(),
-              BoxCariEcer(),
+              BoxDataGrosir(),
             ])));
   }
 }

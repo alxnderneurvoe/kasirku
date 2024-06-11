@@ -28,7 +28,7 @@ class PinjamanList extends StatelessWidget {
           List<DocumentSnapshot> stockItems = snapshot.data!.docs;
           if (searchQuery.isNotEmpty) {
             stockItems = stockItems.where((doc) {
-              return doc['namabarang']
+              return doc['nama_peminjam']
                   .toString()
                   .toLowerCase()
                   .contains(searchQuery.toLowerCase());

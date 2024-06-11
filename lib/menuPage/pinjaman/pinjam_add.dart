@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../model/color.dart';
 
 class AddPinjamanPage extends StatefulWidget {
@@ -105,7 +104,7 @@ class _AddPinjamanPageState extends State<AddPinjamanPage> {
                         controller: jumlahPinjaman,
                         textAlignVertical: TextAlignVertical.bottom,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       )),
                   SizedBox(
                       height: 60,
@@ -113,8 +112,7 @@ class _AddPinjamanPageState extends State<AddPinjamanPage> {
                       child: TextFormField(
                         controller: inputkeperluan,
                         textAlignVertical: TextAlignVertical.bottom,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       ))
                 ])
               ]),
@@ -129,7 +127,7 @@ class _AddPinjamanPageState extends State<AddPinjamanPage> {
                       border: Border.all(color: Colors.grey.shade700)),
                   child: GestureDetector(
                       onTap: () {
-                        _addStock(context);
+                        _addPinjaman(context);
                       },
                       child: Center(
                           child: Text('Add',
@@ -142,29 +140,38 @@ class _AddPinjamanPageState extends State<AddPinjamanPage> {
         ));
   }
 
-  void _addStock(BuildContext context) async {
+  void _addPinjaman(BuildContext context) async {
     try {
-      int quantity = int.parse(jumlahPinjaman.text.trim());
+      String peminjam = selectedpeminjam ?? "";
+      String keperluan = inputkeperluan.text.trim();
+      String jumlahStr = jumlahPinjaman.text.trim();
 
-      if (quantity > 0) {
-        await FirebaseFirestore.instance.collection('pinjaman').add({
-          'tanggal_pinjaman': DateTime.now(),
-          'nama_peminjam': selectedpeminjam,
-          'jumlah_pinjaman': quantity,
-          'keperluan': inputkeperluan
-        });
+      if (peminjam.isEmpty || keperluan.isEmpty || jumlahStr.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Registration successfully'),
-          duration: Duration(seconds: 4),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Please enter valid data.'),
+          content: Text('Please fill out all fields.'),
           duration: Duration(seconds: 2),
         ));
+        return;
       }
+
+      int jumlah = int.parse(jumlahStr);
+      await FirebaseFirestore.instance.collection('pinjaman').add({
+        'tanggal_pinjaman': DateTime.now(),
+        'nama_peminjam': peminjam,
+        'jumlah_pinjaman': jumlah,
+        'keperluan': keperluan
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Registration successful'),
+        duration: Duration(seconds: 4),
+      ));
+      setState(() {
+        jumlahPinjaman.clear();
+        inputkeperluan.clear();
+        selectedpeminjam = null;
+      });
     } catch (e) {
-      print('Error adding stock: $e');
+      print('Error adding pinjaman: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('An error occurred. Please try again later.'),
         duration: Duration(seconds: 2),
